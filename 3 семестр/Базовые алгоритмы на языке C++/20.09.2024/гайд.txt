@@ -1,0 +1,4 @@
+1. Открываем https://webutility.io/csv-to-chart-online
+2. Choose File - выбираем наш "result.csv"
+3. Chart Type - выбираем Line
+4. Create Chart
