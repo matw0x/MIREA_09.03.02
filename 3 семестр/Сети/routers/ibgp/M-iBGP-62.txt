@@ -1,0 +1,35 @@
+/interface bridge
+add name=loopback
+/interface wireless security-profiles
+set [ find default=yes ] supplicant-identity=MikroTik
+/routing bgp instance
+set default as=404 confederation=400 confederation-peers=401-403 \
+    redistribute-connected=yes router-id=10.255.255.62
+/ip address
+add address=13.4.11.62/24 comment=AAlzoabi-M-iBGP-85 interface=ether1 \
+    network=13.4.11.0
+add address=13.4.14.62/24 comment=AAlzoabi-M-iBGP-42 interface=ether2 \
+    network=13.4.14.0
+add address=13.4.13.62/24 comment=AAlzoabi-M-iBGP-23 interface=ether3 \
+    network=13.4.13.0
+add address=10.255.255.62 interface=loopback network=10.255.255.62
+/ip dhcp-client
+add disabled=no interface=ether4
+/ip dns
+set servers=8.8.8.8,8.8.4.4
+/ip firewall nat
+add action=masquerade chain=srcnat out-interface=ether4
+/routing bgp network
+add network=13.4.11.0/24
+add network=13.4.13.0/24
+add network=13.4.14.0/24
+/routing bgp peer
+add default-originate=if-installed name=peer1 nexthop-choice=force-self \
+    remote-address=13.4.11.85 remote-as=403 route-reflect=yes
+add default-originate=if-installed name=peer2 nexthop-choice=force-self \
+    remote-address=13.4.13.23 remote-as=403 route-reflect=yes
+add default-originate=if-installed name=peer3 nexthop-choice=force-self \
+    remote-address=13.4.14.42 remote-as=404 route-reflect=yes
+/system identity
+set name=AAlzoabi-M-iBGP-62
+

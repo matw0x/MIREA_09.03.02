@@ -1,0 +1,297 @@
+hostname AAlzoabi-Main-Router
+!
+boot-start-marker
+boot-end-marker
+!
+!
+enable password 7 06575D72181B
+!
+aaa new-model
+!
+!
+!
+!
+!
+!
+!         
+aaa session-id common
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+          
+          
+!         
+ip dhcp excluded-address 10.1.10.1 10.1.10.9
+ip dhcp excluded-address 10.1.10.101 10.1.10.254
+ip dhcp excluded-address 10.1.20.1 10.1.20.9
+ip dhcp excluded-address 10.1.20.101 10.1.20.254
+ip dhcp excluded-address 10.1.30.1 10.1.30.9
+ip dhcp excluded-address 10.1.30.101 10.1.30.254
+ip dhcp excluded-address 10.1.40.1 10.1.40.9
+ip dhcp excluded-address 10.1.50.1 10.1.50.9
+ip dhcp excluded-address 10.1.60.1 10.1.60.9
+ip dhcp excluded-address 10.1.40.101 10.1.40.254
+ip dhcp excluded-address 10.1.50.101 10.1.50.254
+ip dhcp excluded-address 10.1.60.101 10.1.60.254
+ip dhcp excluded-address 10.1.141.1 10.1.141.9
+ip dhcp excluded-address 10.1.141.101 10.1.141.254
+!         
+ip dhcp pool AAlzoabi-VLAN141POOL
+ network 10.1.141.0 255.255.255.0
+ default-router 10.1.141.254 
+ dns-server 8.8.8.8 8.8.4.4 
+!         
+ip dhcp pool AAlzoabi-VLAN10POOL
+ network 10.1.10.0 255.255.255.0
+ default-router 10.1.10.254 
+ dns-server 8.8.8.8 8.8.4.4 
+!         
+ip dhcp pool AAlzoabi-VLAN20POOL
+ network 10.1.20.0 255.255.255.0
+ default-router 10.1.20.254 
+ dns-server 8.8.8.8 8.8.4.4 
+!         
+ip dhcp pool AAlzoabi-VLAN30POOL
+ network 10.1.30.0 255.255.255.0
+ default-router 10.1.30.254 
+ dns-server 8.8.8.8 8.8.4.4 
+!         
+ip dhcp pool AAlzoabi-VLAN40POOL
+ network 10.1.40.0 255.255.255.0
+ default-router 10.1.40.254 
+ dns-server 8.8.8.8 8.8.4.4 
+!         
+ip dhcp pool AAlzoabi-VLAN50POOL
+ network 10.1.50.0 255.255.255.0
+ default-router 10.1.50.254 
+ dns-server 8.8.8.8 8.8.4.4 
+!         
+ip dhcp pool AAlzoabi-VLAN60POOL
+ network 10.1.60.0 255.255.255.0
+ default-router 10.1.60.254 
+ dns-server 8.8.8.8 8.8.4.4 
+!         
+!         
+!         
+ip domain name ikbsp.ru
+ip name-server 8.8.8.8
+ip cef    
+no ipv6 cef
+!         
+multilink bundle-name authenticated
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+username admin privilege 15 password 7 055A545C7519
+!         
+redundancy
+!         
+!         
+ip ssh version 2
+ip ssh dh min size 2048
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+interface Ethernet0/0
+ no ip address
+!         
+interface Ethernet0/0.10
+ description "AAlzoabi-VLAN-10"
+ encapsulation dot1Q 10
+ ip address 10.1.10.254 255.255.255.0
+ ip access-group vlan10 in
+!         
+interface Ethernet0/0.20
+ description "AAlzoabi-VLAN-20"
+ encapsulation dot1Q 20
+ ip address 10.1.20.254 255.255.255.0
+ ip access-group vlan20 in
+!         
+interface Ethernet0/0.30
+ description "AAlzoabi-VLAN-30"
+ encapsulation dot1Q 30
+ ip address 10.1.30.254 255.255.255.0
+ ip access-group vlan30 in
+!         
+interface Ethernet0/0.40
+ description "AAlzoabi-VLAN-40"
+ encapsulation dot1Q 40
+ ip address 10.1.40.254 255.255.255.0
+!         
+interface Ethernet0/0.50
+ description "AAlzoabi-VLAN-50"
+ encapsulation dot1Q 50
+ ip address 10.1.50.254 255.255.255.0
+ ip access-group vlan50 in
+!         
+interface Ethernet0/0.60
+ description "AAlzoabi-VLAN-60"
+ encapsulation dot1Q 60
+ ip address 10.1.60.254 255.255.255.0
+!         
+interface Ethernet0/0.70
+ description "AAlzoabi-VLAN-Management"
+ encapsulation dot1Q 70
+ ip address 10.1.70.254 255.255.255.0
+!         
+interface Ethernet0/0.141
+ description "AAlzoabi-VLAN-141"
+ encapsulation dot1Q 141
+ ip address 10.1.141.254 255.255.255.0
+!         
+interface Ethernet0/1
+ description "AAlzoabi-C-R-1"
+ ip address 10.4.0.2 255.255.255.252
+!         
+interface Ethernet0/2
+ description "AAlzoabi-C-R-2"
+ ip address 10.5.0.2 255.255.255.252
+!         
+interface Ethernet0/3
+ description "AAlzoabi-C-R-3"
+ ip address 10.3.0.2 255.255.255.252
+!         
+interface Ethernet1/0
+ description "AAlzoabi-C-R-4"
+ ip address 10.6.0.2 255.255.255.252
+!         
+interface Ethernet1/1
+ description "AAlzoabi-C-RIP-1 eBGP"
+ ip address 17.1.1.2 255.255.255.252
+!         
+interface Ethernet1/2
+ no ip address
+ shutdown 
+!         
+interface Ethernet1/3
+ description "AAlzoabi-C-iBGP-102 eBGP"
+ ip address 16.1.1.2 255.255.255.252
+!         
+interface Ethernet2/0
+ description "AAlzoabi-M-OSPF-10 eBGP"
+ ip address 14.1.1.2 255.255.255.252
+!         
+interface Ethernet2/1
+ no ip address
+ shutdown 
+!         
+interface Ethernet2/2
+ no ip address
+ shutdown 
+!         
+interface Ethernet2/3
+ no ip address
+ shutdown 
+!         
+router bgp 100
+ no bgp log-neighbor-changes
+ redistribute connected
+ redistribute static
+ neighbor 14.1.1.1 remote-as 300
+ neighbor 16.1.1.1 remote-as 400
+ neighbor 17.1.1.1 remote-as 200
+ default-metric 1
+!         
+ip forward-protocol nd
+!         
+!         
+no ip http server
+no ip http secure-server
+ip route 10.2.10.0 255.255.254.0 10.6.0.1
+ip route 10.2.12.0 255.255.254.0 10.6.0.1
+ip route 16.3.0.0 255.255.252.0 10.3.0.1
+ip route 17.3.0.0 255.255.252.0 10.4.0.1
+ip route 18.3.0.0 255.255.252.0 10.5.0.1
+ip route 30.5.2.0 255.255.254.0 10.6.0.1
+ip route 30.5.22.0 255.255.255.252 10.6.0.1
+ip route 30.5.33.0 255.255.255.252 10.6.0.1
+ip route 30.30.1.0 255.255.255.0 10.3.0.1
+ip route 30.30.11.0 255.255.255.0 10.6.0.1
+ip route 169.24.0.0 255.255.252.0 10.3.0.1
+ip route 172.21.0.0 255.255.252.0 10.4.0.1
+ip route 182.26.0.0 255.255.252.0 10.5.0.1
+!         
+ip access-list extended vlan10
+ permit tcp 10.1.10.0 0.0.0.255 10.1.70.0 0.0.0.255 eq 3389
+ permit tcp 10.1.10.0 0.0.0.255 10.1.70.0 0.0.0.255 eq 22
+ permit tcp 10.1.10.0 0.0.0.255 10.1.70.0 0.0.0.255 eq 443
+ permit tcp 10.1.10.0 0.0.0.255 10.1.70.0 0.0.0.255 eq 445
+ permit icmp 10.1.10.0 0.0.0.255 10.1.70.0 0.0.0.255
+ permit ip 10.1.10.0 0.0.0.255 10.1.10.0 0.0.0.255
+ permit tcp 10.1.10.0 0.0.0.255 10.1.70.0 0.0.0.255 eq www
+ permit udp any eq bootpc any eq bootps
+ deny   ip 10.1.10.0 0.0.0.255 any
+ip access-list extended vlan20
+ permit udp any eq bootpc any eq bootps
+ permit icmp 10.1.20.0 0.0.0.255 10.1.30.0 0.0.0.255 echo
+ permit icmp 10.1.20.0 0.0.0.255 10.1.40.0 0.0.0.255 echo
+ permit icmp 10.1.20.0 0.0.0.255 10.1.50.0 0.0.0.255 echo
+ permit icmp 10.1.20.0 0.0.0.255 10.1.60.0 0.0.0.255 echo
+ deny   ip 10.1.20.0 0.0.0.255 10.1.30.0 0.0.0.255
+ deny   ip 10.1.20.0 0.0.0.255 10.1.40.0 0.0.0.255
+ deny   ip 10.1.20.0 0.0.0.255 10.1.50.0 0.0.0.255
+ deny   ip 10.1.20.0 0.0.0.255 10.1.60.0 0.0.0.255
+ permit ip 10.1.20.0 0.0.0.255 any
+ip access-list extended vlan30
+ deny   ip 10.1.30.0 0.0.0.255 13.1.0.0 0.0.15.255
+ deny   ip 10.1.30.0 0.0.0.255 13.4.0.0 0.0.15.255
+ deny   ip 10.1.30.0 0.0.0.255 13.4.16.0 0.0.1.255
+ deny   ip 10.1.30.0 0.0.0.255 16.1.1.0 0.0.0.3
+ deny   ip 10.1.30.0 0.0.0.255 14.1.1.0 0.0.0.3
+ deny   ip 10.1.30.0 0.0.0.255 17.1.1.0 0.0.0.3
+ permit ip any any
+ip access-list extended vlan50
+ deny   ospf any any
+ deny   tcp any any eq bgp
+ deny   udp any any eq rip
+ permit ip 10.0.50.0 0.0.0.255 any
+ permit udp any eq bootpc any eq bootps
+!         
+!         
+!         
+!         
+!         
+!         
+control-plane
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+line con 0
+ logging synchronous
+line aux 0
+line vty 0 4
+ exec-timeout 60 0
+ logging synchronous
+ transport input ssh
+!         
+!         
+end

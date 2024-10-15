@@ -1,0 +1,45 @@
+/interface bridge
+add name=loopback
+/interface wireless security-profiles
+set [ find default=yes ] supplicant-identity=MikroTik
+/routing bgp instance
+set default as=300 redistribute-connected=yes redistribute-ospf=yes \
+    redistribute-static=yes router-id=10.255.255.10
+/routing ospf instance
+set [ find default=yes ] metric-bgp=121221 metric-connected=12213 \
+    metric-other-ospf=1 metric-rip=123 metric-static=10234 redistribute-bgp=\
+    as-type-1 redistribute-connected=as-type-1 redistribute-other-ospf=\
+    as-type-1 redistribute-static=as-type-1 router-id=10.255.255.10
+/ip address
+add address=12.2.10.1/30 comment=AAlzoabi-M-OSPF-2 interface=ether3 network=\
+    12.2.10.0
+add address=12.3.10.1/30 comment=AAlzoabi-M-OSPF-3 interface=ether4 network=\
+    12.3.10.0
+add address=12.4.10.1/30 comment=AAlzoabi-C-OSPF-1 interface=ether5 network=\
+    12.4.10.0
+add address=14.1.1.1/30 comment=AAlzoabi-Main-Router interface=ether1 \
+    network=14.1.1.0
+add address=15.1.1.2/30 comment=AAlzoabi-C-iBGP-102 interface=ether6 network=\
+    15.1.1.0
+add address=18.1.1.1/30 comment=AAlzoabi-C-RIP-1 interface=ether2 network=\
+    18.1.1.0
+/ip dhcp-client
+add disabled=no interface=ether1
+/ip dns
+set servers=8.8.8.8,8.8.4.4
+/routing bgp peer
+add default-originate=if-installed name=AAlzoabi-C-RIP-1 remote-address=\
+    18.1.1.2 remote-as=200
+add default-originate=if-installed name=AAlzoabi-Main-Router remote-address=\
+    14.1.1.2 remote-as=100
+add default-originate=if-installed name=AAlzoabi-C-iBGP-102 remote-address=\
+    15.1.1.1 remote-as=400
+/routing filter
+add action=accept chain=ospf-in set-distance=15
+/routing ospf network
+add area=backbone network=12.2.10.0/30
+add area=backbone network=12.3.10.0/30
+add area=backbone network=12.4.10.0/30
+add area=backbone
+/system identity
+set name=AAlzoabi-M-OSPF-10

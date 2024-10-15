@@ -1,0 +1,140 @@
+hostname AAlzoabi-C-OSPF-5
+!
+boot-start-marker
+boot-end-marker
+!
+!
+enable password 7 055A545C7519
+!
+aaa new-model
+!
+!
+!
+!
+!
+!
+!         
+aaa session-id common
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+no ip icmp rate-limit unreachable
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+          
+          
+!         
+!         
+!         
+!         
+ip domain name ikbsp.ru
+ip name-server 8.8.8.8
+ip cef    
+no ipv6 cef
+!         
+multilink bundle-name authenticated
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+username admin privilege 15 password 7 075E731F1A5C
+!         
+redundancy
+!         
+no cdp log mismatch duplex
+!         
+ip tcp synwait-time 5
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+interface Ethernet0/0
+ description "AAlzoabi-C-OSPF-4"
+ ip address 12.2.10.17 255.255.255.252
+ ip nat inside
+ ip virtual-reassembly in
+!         
+interface Ethernet0/1
+ description "AAlzoabi-M-OSPF-5"
+ ip address 12.2.16.2 255.255.255.252
+ ip nat inside
+ ip virtual-reassembly in
+!         
+interface Ethernet0/2
+ description "AAlzoabi-M-OSPF-4"
+ ip address 12.3.12.2 255.255.255.252
+ ip nat inside
+ ip virtual-reassembly in
+!         
+interface Ethernet0/3
+ description "AAlzoabi-Internet-OSPF"
+ ip address dhcp
+ ip nat outside
+ ip virtual-reassembly in
+ ip ospf priority 255
+!         
+router ospf 1
+ redistribute static subnets
+ network 12.2.10.16 0.0.0.3 area 0
+ network 12.2.16.0 0.0.0.3 area 0
+ network 12.3.12.0 0.0.0.3 area 0
+ default-information originate
+!         
+ip forward-protocol nd
+!         
+!         
+no ip http server
+no ip http secure-server
+ip nat inside source list 1 interface Ethernet0/3 overload
+ip route profile
+!         
+!         
+!         
+access-list 1 permit any
+!         
+!         
+!         
+control-plane
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+!         
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ exec-timeout 60 0
+ logging synchronous
+ transport input ssh
+!         
+!         
+end       

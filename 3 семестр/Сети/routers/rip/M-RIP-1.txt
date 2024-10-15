@@ -1,0 +1,39 @@
+/interface ethernet
+set [ find default-name=ether3 ] name=ether1
+set [ find default-name=ether4 ] name=ether2
+set [ find default-name=ether1 ] name=ether3
+set [ find default-name=ether2 ] name=ether4
+/interface list
+add name=nat
+/interface wireless security-profiles
+set [ find default=yes ] supplicant-identity=MikroTik
+/snmp community
+set [ find default=yes ] addresses=0.0.0.0/0
+/user group
+set full policy="local,telnet,ssh,ftp,reboot,read,write,policy,test,winbox,pas\
+    sword,web,sniff,sensitive,api,romon,dude,tikapp"
+/ip address
+add address=80.3.84.2/30 interface=ether1 network=80.3.84.0
+add address=75.13.44.2/30 interface=ether2 network=75.13.44.0
+add address=186.3.48.1/30 interface=ether3 network=186.3.48.0
+/ip dhcp-client
+add !dhcp-options disabled=no interface=ether4
+/ip dns
+set servers=8.8.8.8,8.8.4.4
+/ip firewall nat
+add action=masquerade chain=srcnat out-interface=ether4
+/routing rip
+set distribute-default=if-installed redistribute-connected=yes \
+    redistribute-static=yes
+/routing rip interface
+add interface=ether1
+add interface=ether2
+add interface=ether3
+/routing rip network
+add network=75.13.44.0/30
+add network=80.3.84.0/30
+add network=186.3.48.0/30
+/system identity
+set name=AAlzoabi-M-RIP-1
+/system package update
+set channel=development
