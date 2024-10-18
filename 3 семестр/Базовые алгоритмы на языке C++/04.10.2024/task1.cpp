@@ -57,7 +57,7 @@ int main() {
     srand(42);
     long double c = 0;
 
-    for(int i = 1e5; i <= 1e6; i += 1e5){
+    for(int i = 1e3; i <= 1e4; i += 1e3) {
         file << i << ", ";
 
         std::vector<int> arr(i, 0);
@@ -68,21 +68,18 @@ int main() {
         double myTime = 0.0;
         for (int j = 0; j < 10; ++j) {
             double start = clock();
-            mergeSort(arr, 0, arr.size() - 1);
+            bubbleSort(arr);
             double end = clock();
 
             myTime += end - start;
-            for (int k = 0; k < i; ++k) {
-                arr[k] = rand();
-            }   
         }
 
         myTime /= 10;
-        if(i == 1e5){
-            c = myTime / (long double)(i * log(i));
+        if (i == 1e3) {
+            c = myTime / (long double)(i * i);
         }
         
-        double ex = c * i * log(i);
+        double ex = c * i * i;
         file << ex << ", " << myTime << std::endl;
     }
 
