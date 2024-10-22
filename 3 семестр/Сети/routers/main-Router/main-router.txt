@@ -124,6 +124,7 @@ interface Ethernet0/0.10
  encapsulation dot1Q 10
  ip address 10.1.10.254 255.255.255.0
  ip access-group vlan10 in
+ ip access-group vlan10out out
 !         
 interface Ethernet0/0.20
  description "AAlzoabi-VLAN-20"
@@ -146,7 +147,6 @@ interface Ethernet0/0.50
  description "AAlzoabi-VLAN-50"
  encapsulation dot1Q 50
  ip address 10.1.50.254 255.255.255.0
- ip access-group vlan50 in
 !         
 interface Ethernet0/0.60
  description "AAlzoabi-VLAN-60"
@@ -182,6 +182,7 @@ interface Ethernet1/0
 interface Ethernet1/1
  description "AAlzoabi-C-RIP-1 eBGP"
  ip address 17.1.1.2 255.255.255.252
+ ip access-group vlan50 in
 !         
 interface Ethernet1/2
  no ip address
@@ -190,10 +191,12 @@ interface Ethernet1/2
 interface Ethernet1/3
  description "AAlzoabi-C-iBGP-102 eBGP"
  ip address 16.1.1.2 255.255.255.252
+ ip access-group vlan50 in
 !         
 interface Ethernet2/0
  description "AAlzoabi-M-OSPF-10 eBGP"
  ip address 14.1.1.2 255.255.255.252
+ ip access-group vlan50 in
 !         
 interface Ethernet2/1
  no ip address
@@ -236,15 +239,14 @@ ip route 172.21.0.0 255.255.252.0 10.4.0.1
 ip route 182.26.0.0 255.255.252.0 10.5.0.1
 !         
 ip access-list extended vlan10
- permit tcp 10.1.10.0 0.0.0.255 10.1.70.0 0.0.0.255 eq 3389
- permit tcp 10.1.10.0 0.0.0.255 10.1.70.0 0.0.0.255 eq 22
- permit tcp 10.1.10.0 0.0.0.255 10.1.70.0 0.0.0.255 eq 443
- permit tcp 10.1.10.0 0.0.0.255 10.1.70.0 0.0.0.255 eq 445
- permit icmp 10.1.10.0 0.0.0.255 10.1.70.0 0.0.0.255
- permit ip 10.1.10.0 0.0.0.255 10.1.10.0 0.0.0.255
- permit tcp 10.1.10.0 0.0.0.255 10.1.70.0 0.0.0.255 eq www
- permit udp any eq bootpc any eq bootps
- deny   ip 10.1.10.0 0.0.0.255 any
+ permit udp host 0.0.0.0 host 255.255.255.255 eq bootps bootpc
+ evaluate REF_ICMP
+ evaluate REF_TCP
+ deny ip any any
+ip access-list extended vlan10out
+ permit icmp 10.1.70.0 0.0.0.255 10.1.10.0 0.0.0.255 reflect REF_ICMP
+ permit tcp 10.1.70.0 0.0.0.255 10.1.10.0 0.0.0.255 eq 3389 www 22 443 445 reflect REF_TCP
+ deny ip any any
 ip access-list extended vlan20
  permit udp any eq bootpc any eq bootps
  permit icmp 10.1.20.0 0.0.0.255 10.1.30.0 0.0.0.255 echo
@@ -265,11 +267,8 @@ ip access-list extended vlan30
  deny   ip 10.1.30.0 0.0.0.255 17.1.1.0 0.0.0.3
  permit ip any any
 ip access-list extended vlan50
- deny   ospf any any
- deny   tcp any any eq bgp
- deny   udp any any eq rip
- permit ip 10.0.50.0 0.0.0.255 any
- permit udp any eq bootpc any eq bootps
+ deny   ip 10.1.50.0 0.0.0.255 any
+ permit ip any any
 !         
 !         
 !         
@@ -294,4 +293,4 @@ line vty 0 4
  transport input ssh
 !         
 !         
-end
+end 
