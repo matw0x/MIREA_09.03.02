@@ -245,7 +245,7 @@ ip access-list extended vlan10
  deny ip any any
 ip access-list extended vlan10out
  permit icmp 10.1.70.0 0.0.0.255 10.1.10.0 0.0.0.255 reflect REF_ICMP
- permit tcp 10.1.70.0 0.0.0.255 10.1.10.0 0.0.0.255 eq 3389 www 22 443 445 reflect REF_TCP
+ permit tcp 10.1.70.0 0.0.0.255 10.1.10.0 0.0.0.255 eq 3389 www 22 telnet 443 445 reflect REF_TCP
  deny ip any any
 ip access-list extended vlan20
  permit udp any eq bootpc any eq bootps
