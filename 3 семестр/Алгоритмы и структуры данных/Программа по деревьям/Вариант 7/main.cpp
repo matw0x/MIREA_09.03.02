@@ -14,22 +14,27 @@
 #include <stack>
 #include <string>
 #include <unordered_set>
+#include <functional>
+#include <map>
+#include <sstream>
+
+const std::string stars(52, '*');
 
 template <typename T> 
 class Tree {
-public:
+private:
     struct Node {
         std::vector<Node*> children;
         T value;
 
-        Node(const T& v) : value(v) {} 
+        Node(const T& v) : value(v) {}
     };
 
-private:
     Node *LAMBDA = nullptr, *root;
 
 public:
     Tree() : root(nullptr) {}
+    ~Tree() { MAKENULL(); }
 
     class Iterator {
     public:
@@ -73,11 +78,10 @@ public:
     };
 
     Iterator begin() const { return Iterator(root); }
-
     Iterator end() const { return Iterator(nullptr); }
 
     Node* PARENT(const Node* node) const {
-        if (!root || !node) return LAMBDA;
+        if (!root || !node || node == root) return LAMBDA;
 
         for (Iterator it = begin(); it != end(); ++it) {
             const Node* current = it.current;
@@ -129,16 +133,6 @@ public:
 
     Node* ROOT() const { return root; }
 
-    void MAKENULL() {
-        for (auto it = begin(); it != end(); ) {
-            const Node* current = it.current; 
-            ++it;
-            delete current;
-        }
-
-        root = nullptr;
-    }
-
     void push(const T& key) {
         if (!root) {
             root = new Node(key);
@@ -171,107 +165,113 @@ public:
     }
 
     static void myOperation(Tree<T>& A, const Tree<T>& B) {
-        for (auto it = B.begin(); it != B.end(); ++it) {
-            A.push(*it);
+        for (auto it = B.begin(); it != B.end(); ++it) A.push(*it);
+    }
+
+    void printPostorder(const std::string& treeName) const {
+        if (!root) {
+            std::cout << treeName << " is empty :(\n";
+            return;
         }
+
+        std::cout << "POSTORDER PRINT " << treeName << std::endl;
+
+        for (auto it = begin(); it != end(); ++it) {
+            std::cout << *it << ' ';
+        }
+
+        std::cout << std::endl << stars << std::endl;
+    }
+
+    void printTree(const std::string& treeName) const {
+        std::cout << stars << std::endl;
+
+        if (!root) {
+            std::cout << treeName << " is empty :(\n";
+            return;
+        }
+
+        std::cout << treeName << ":\n";
+
+        std::function<void(const Node*, int, int, std::map<int, std::string>&)> buildTreeLines = 
+            [&](const Node* node, int depth, int position, std::map<int, std::string>& levels) {
+                if (!node) return;
+
+                std::ostringstream oss;
+                oss << node->value;
+                std::string value = oss.str();
+
+                if (levels.count(depth) == 0) {
+                    levels[depth] = std::string(position, ' ') + value;
+                } else {
+                    if (static_cast<int>(levels[depth].size()) < position) {
+                        levels[depth] += std::string(position - levels[depth].size(), ' ') + value;
+                    } else {
+                        levels[depth] += value;
+                    }
+                }
+
+                if (!node->children.empty()) {
+                    int spacing = std::max(2, 6 - depth);
+                    int leftPosition = position - spacing;
+                    int rightPosition = position + spacing;
+
+                    if (node->children.size() >= 1 && node->children[0]) {
+                        if (static_cast<int>(levels[depth + 1].size()) < leftPosition) {
+                            levels[depth + 1] += std::string(leftPosition - levels[depth + 1].size(), ' ') + "/";
+                        } else {
+                            levels[depth + 1] += "/";
+                        }
+                        buildTreeLines(node->children[0], depth + 2, leftPosition, levels);
+                    }
+
+                    if (node->children.size() >= 2 && node->children[1]) {
+                        if (static_cast<int>(levels[depth + 1].size()) < rightPosition) {
+                            levels[depth + 1] += std::string(rightPosition - levels[depth + 1].size(), ' ') + "\\";
+                        } else {
+                            levels[depth + 1] += "\\";
+                        }
+                        buildTreeLines(node->children[1], depth + 2, rightPosition, levels);
+                    }
+                }
+            };
+
+        std::map<int, std::string> levels;
+        buildTreeLines(root, 0, 40, levels);
+
+        for (const auto& [_, line] : levels) {
+            std::cout << line << std::endl;
+        }
+    }
+
+private:
+    void MAKENULL() {
+        for (auto it = begin(); it != end(); ) {
+            const Node* current = it.current; 
+            ++it;
+            delete current;
+        }
+
+        root = nullptr;
     }
 };
 
-const std::string stars(52, '*');
-
-template <typename T>
-void printPostorder(const Tree<T>& tree, const std::string& treeName) {
-    std::cout << "POSTORDER TREE " << treeName << std::endl;
-    for (auto it = tree.begin(); it != tree.end(); ++it) {
-        std::cout << *it << ' ';
-    }
-    std::cout << std::endl << stars << std::endl;
-}
-
-void printTree(const std::vector<std::string>& treeLevels) {
-    for (const auto& level : treeLevels) {
-        std::cout << level << std::endl;
-    }
-    std::cout << stars << std::endl;
-}
-
 int main() {
-    const std::vector<std::string> treeA = {
-        "       5.0         ",
-        "     /    \\       ",
-        "    3      7       ",
-        "   / \\   / \\     ",
-        "  2   4  6   8     ",
-        " /             \\   ",
-        "1               9   ",
-        "                 \\ ",
-        "                  10"
-    };
-
-    std::cout << stars << std::endl;
-    std::cout << "TREE A:\n";
-    printTree(treeA);
-
     Tree<double> A;
     const double valuesA[10] = {5.0, 3.0, 7.0, 2.0, 4.0, 6.0, 1.0, 8.0, 9.0, 10.0};
-    for (int i = 0; i != 10; ++i) {
-        A.push(valuesA[i]);
-    }
-
-    printPostorder(A, "A");
-
-    ///////////////////////
-
-    const std::vector<std::string> treeB = {
-        "        0.0         ",
-        "     /      \\      ",
-        "  -3.0       2.5    ",
-        "   / \\     /  \\   ",
-        "-4.0 -2.0  1.5 3.5  ",
-        "  /    \\        \\ ",
-        "-5.0   -1.0      4.5"
-    };
-
-    std::cout << "TREE B:\n";
-    printTree(treeB);
+    for (int i = 0; i != 10; ++i) A.push(valuesA[i]);
+    A.printTree("A");
+    A.printPostorder("A");
 
     Tree<double> B;
-    const double valuesB[] = {0.0, -3.0, 2.5, -4.0, -2.0, 1.5, 3.5, 4.5, -5.0, -1.0};
-    for (int i = 0; i != 10; ++i) {
-        B.push(valuesB[i]);
-    }
-
-    printPostorder(B, "B");
-
-    ////////////////////////
+    const double valuesB[10] = {0.0, -3.0, 2.5, -4.0, -2.0, 1.5, 3.5, 4.5, -5.0, -1.0};
+    for (int i = 0; i != 10; ++i) B.push(valuesB[i]);
+    B.printTree("B");
+    B.printPostorder("B");
 
     Tree<double>::myOperation(A, B);
-
-    const std::vector<std::string> unionA_B = {
-        "                           5.0                ",
-        "                     /               \\       ",
-        "                    3                 7       ",
-        "               /       \\            / \\     ",
-        "              2         4           6   8     ",
-        "             /\\       / \\              \\   ",
-        "            1 2.5     3.5 4.5             9   ",
-        "           / \\                            \\ ",
-        "          -5  1.5                           10",
-        "            \\                                ",
-        "             -4                               ",
-        "               \\                             ",
-        "                -1                            ",
-        "                / \\                          ",
-        "               -2  0                          ",
-        "               /                              ",
-        "              -3                              "
-    };
-
-    printTree(unionA_B);
-    printPostorder(A, "UNION A and B");
-
-    A.MAKENULL();
-    B.MAKENULL();
+    A.printTree("UNION A and B");
+    A.printPostorder("UNION A and B");
 
     return 0;
 }
