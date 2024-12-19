@@ -1,6 +1,9 @@
-// Реализовать стек из элементов класса Worker на основе односвязного
-// списка. Поместить в стек трех воркеров, достать их из стека и вывести
-// на экран.
+// Очередь – это последовательность элементов, над которыми
+// разрешены только две операции: добавить новый элемент в конец
+// очереди и убрать головной элемент из последовательности.
+// Реализовать очередь из элементов класса Worker на основе
+// динамического массива. Поместить в очередь трех воркеров, достать
+// их из очереди и вывести на экран.
 
 #include <iostream>
 #include <string>
@@ -74,53 +77,49 @@ public:
     }
 };
 
-class Stack {
+class Queue {
 private:
-    struct Node {
-        Worker data;
-        Node* next;
-
-        Node(const Worker& w, Node* n = nullptr) : data(w), next(n) {}
-    };
-
-    Node* head;
+    Worker* array;
+    size_t capacity, size;
 
 public:
-    Stack() : head(nullptr) {}
-
-    ~Stack() {
-        while (head) {
-            Node* temp = head;
-            head = head->next;
-            delete temp;
-        }
+    Queue(const size_t& initialCapacity) : capacity(initialCapacity), size(0) {
+        array = new Worker[capacity];
     }
 
-    void push(const Worker& worker) {
-        Node* newNode = new Node(worker, head);
-        head = newNode;
-    }
+    ~Queue() { delete[] array; }
 
-    Worker pop() {
-        if (!head) {
-            std::cout << "Stack is empty.\n";
-            return Worker();
+    void push(const Worker& value) {
+        if (size == capacity) {
+            resize(capacity * 2);
         }
 
-        Node* temp = head;
-        Worker workerData = head->data;
-        head = head->next;
-        delete temp;
-
-        return workerData;
+        array[size++] = value;
     }
+
+    void pop() {
+        if (isEmpty()) throw std::out_of_range("Queue is empty!\n");
+
+        for (size_t i = 1; i < size; ++i) array[i - 1] = array[i];
+
+        --size;
+    }
+
+    bool isEmpty() const { return size == 0; }
 
     void show() const {
-        Node* current = head;
-        while (current) {
-            current->data.print();
-            current = current->next;
-        }
+        for (size_t i = 0; i != size; ++i) array[i].print();
+    }
+
+private:
+    void resize(const size_t& newCapacity) {
+        Worker* newArray = new Worker[newCapacity];
+
+        for (size_t i = 0; i != size; ++i) newArray[i] = std::move(array[i]);
+
+        delete[] array;
+        array = newArray;
+        capacity = newCapacity;
     }
 };
 
@@ -144,12 +143,12 @@ int main() {
     worker3.setRole(DIRECTOR);
     worker3.setSalary(300000);
 
-    Stack s;
-    s.push(worker1);
-    s.push(worker2);
-    s.push(worker3);
+    Queue q(3);
+    q.push(worker1);
+    q.push(worker2);
+    q.push(worker3);
 
-    s.show();
+    q.show();
 
     return 0;
 }

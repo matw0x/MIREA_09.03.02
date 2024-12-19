@@ -1,6 +1,5 @@
-// Реализовать стек из элементов класса Worker на основе односвязного
-// списка. Поместить в стек трех воркеров, достать их из стека и вывести
-// на экран.
+// Реализовать очередь из элементов класса Worker на основе
+// односвязного списка.
 
 #include <iostream>
 #include <string>
@@ -74,50 +73,55 @@ public:
     }
 };
 
-class Stack {
+class Queue {
 private:
     struct Node {
         Worker data;
         Node* next;
 
-        Node(const Worker& w, Node* n = nullptr) : data(w), next(n) {}
+        Node(const Worker& worker) : data(worker), next(nullptr) {}
     };
 
     Node* head;
 
 public:
-    Stack() : head(nullptr) {}
+    Queue() : head(nullptr) {}
+    ~Queue() { while (!isEmpty()) dequeue(); }
 
-    ~Stack() {
-        while (head) {
-            Node* temp = head;
-            head = head->next;
-            delete temp;
+    bool isEmpty() const { return !head; }
+
+    void push(const Worker& worker) {
+        Node* newNode = new Node(worker);
+        if (head == nullptr) {
+            head = newNode;
+        } else {
+            Node* current = head;
+            while (current->next != nullptr) {
+                current = current->next;
+            }
+            current->next = newNode;
         }
     }
 
-    void push(const Worker& worker) {
-        Node* newNode = new Node(worker, head);
-        head = newNode;
-    }
-
-    Worker pop() {
-        if (!head) {
-            std::cout << "Stack is empty.\n";
-            return Worker();
+    void dequeue() {
+        if (head == nullptr) {
+            std::cout << "Queue is empty!\n";
+            return;
         }
 
         Node* temp = head;
-        Worker workerData = head->data;
         head = head->next;
         delete temp;
-
-        return workerData;
     }
 
-    void show() const {
+    void print() const {
+        if (isEmpty()) {
+            std::cout << "Queue is empty!\n";
+            return;
+        }
+
         Node* current = head;
-        while (current) {
+        while (current != nullptr) {
             current->data.print();
             current = current->next;
         }
@@ -144,12 +148,12 @@ int main() {
     worker3.setRole(DIRECTOR);
     worker3.setSalary(300000);
 
-    Stack s;
-    s.push(worker1);
-    s.push(worker2);
-    s.push(worker3);
+    Queue q;
+    q.push(worker1);
+    q.push(worker2);
+    q.push(worker3);
 
-    s.show();
+    q.print();
 
     return 0;
 }

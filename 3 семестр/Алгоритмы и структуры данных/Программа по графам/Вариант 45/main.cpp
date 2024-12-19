@@ -68,18 +68,13 @@ private:
         data.vertices[current].visited = true;
         path.push_back(data.vertices[current].name);
 
-        bool isLeaf = true;
-
         for (size_t next = 0; next != data.adjacencyMatrix[current].size(); ++next) {
             if (data.adjacencyMatrix[current][next] && !data.vertices[next].visited) {
-                isLeaf = false;
                 findAllPaths(next, path, allPaths);
             }
         }
 
-        if (isLeaf) {
-            allPaths.push_back(path);
-        }
+        if (path.size() > 1) allPaths.push_back(path);
 
         data.vertices[current].visited = false;
         path.pop_back();
@@ -343,51 +338,15 @@ void run(Graph& graph, const int& countVertices, const std::string& allEdges) {
 int main() {
     Graph graph1;
     const std::string edges1 = R"(
-        1 3
-        1 5
-        1 6
+        1 2
+        2 3
         2 5
-        2 6
+        3 1
+        3 3
         3 4
-        3 5
-        5 6
+        4 3
+        5 4
     )";
 
-    Graph graph2;
-    const std::string edges2 = R"(
-        1 3
-        1 5
-        1 6
-        2 5
-        2 6
-        3 4
-        3 5
-        5 6
-        4 18
-        18 20
-        20 8
-        8 11
-        11 7
-        7 16
-        8 7
-        7 2
-        2 9
-        9 16
-        15 10
-        10 12
-        12 1
-        1 13
-        13 17
-        14 19
-        17 3
-        1 19
-        15 6
-        12 4
-        20 17
-    )";
-
-    run(graph1, 6, edges1);
-    run(graph2, 20, edges2);
-
-    return 0;
+    run(graph1, 5, edges1);
 }

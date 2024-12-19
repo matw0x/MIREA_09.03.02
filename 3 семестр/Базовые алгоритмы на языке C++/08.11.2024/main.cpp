@@ -80,8 +80,7 @@ public:
 class Stack {
 private:
     Worker* array;
-    const size_t ARRAY_SIZE;
-    size_t headIndex;
+    size_t ARRAY_SIZE, headIndex;
 
 public:
     Stack(const size_t& arrSize) : ARRAY_SIZE(arrSize), headIndex(0) {
@@ -91,11 +90,16 @@ public:
     ~Stack() { delete[] array; }
 
     void push(const Worker& worker) {
-        if (headIndex < ARRAY_SIZE) {
-            array[headIndex++] = worker;
-        } else {
-            std::cout << "Stack is full\n";
+        if (headIndex == ARRAY_SIZE) {
+            size_t newSize = ARRAY_SIZE * 2;
+            Worker* newArray = new Worker[newSize];
+            for (size_t i = 0; i != ARRAY_SIZE; ++i) newArray[i] = array[i];
+            delete[] array;
+            array = newArray;
+            ARRAY_SIZE = newSize;
         }
+
+        array[headIndex++] = worker;
     }
 
     Worker pop() {

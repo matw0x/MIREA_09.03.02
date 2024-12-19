@@ -165,20 +165,54 @@ public:
     }
 
     static void myOperation(Tree<T>& A, const Tree<T>& B) {
-        for (auto it = B.begin(); it != B.end(); ++it) A.push(*it);
+        std::function<void(const Node*)> postOrder = [&](const Node* current) {
+            if (!current) return;
+
+            if (!current->children.empty() ) postOrder(current->children[0]);
+            if (current->children.size() == 2 ) postOrder(current->children[1]);
+
+            A.push(current->value);
+        };
+
+        postOrder(B.ROOT());
+
+        // альтернативное решение:
+        // for (auto it = B.begin(); it != B.end(); ++it) A.push(*it);
     }
 
-    void printPostorder(const std::string& treeName) const {
+    void printPostOrderByIterator(const std::string& treeName) const {
         if (!root) {
             std::cout << treeName << " is empty :(\n";
             return;
         }
 
-        std::cout << "POSTORDER PRINT " << treeName << std::endl;
+        std::cout << "POSTORDER PRINT BY ITERATOR | " << treeName << std::endl;
 
         for (auto it = begin(); it != end(); ++it) {
             std::cout << *it << ' ';
         }
+
+        std::cout << std::endl << stars << std::endl;
+    }
+
+    void printPostOrderByRecursive(const std::string& treeName) const {
+        if (!root) {
+            std::cout << treeName << " is empty :(\n";
+            return;
+        }
+
+        std::cout << "POSTORDER PRINT BY RECURSIVE | " << treeName << std::endl;
+
+        std::function<void(const Node*)> printRec = [&](const Node* current) {
+            if (!current) return;
+
+            if (!current->children.empty() ) printRec(current->children[0]);
+            if (current->children.size() == 2 ) printRec(current->children[1]);
+
+            std::cout << current->value << ' ';
+        };
+
+        printRec(root);
 
         std::cout << std::endl << stars << std::endl;
     }
@@ -253,6 +287,8 @@ private:
         }
 
         root = nullptr;
+
+        // альтернативное решение через рекурсию обратным обходом
     }
 };
 
@@ -261,17 +297,18 @@ int main() {
     const double valuesA[10] = {5.0, 3.0, 7.0, 2.0, 4.0, 6.0, 1.0, 8.0, 9.0, 10.0};
     for (int i = 0; i != 10; ++i) A.push(valuesA[i]);
     A.printTree("A");
-    A.printPostorder("A");
+    A.printPostOrderByIterator("A");
 
     Tree<double> B;
-    const double valuesB[10] = {0.0, -3.0, 2.5, -4.0, -2.0, 1.5, 3.5, 4.5, -5.0, -1.0};
+    const double valuesB[10] = {0.0, 3.0, 2.5, 4.0, 2.0, 1.5, 3.5, 4.5, 5.0, 1.0};
     for (int i = 0; i != 10; ++i) B.push(valuesB[i]);
     B.printTree("B");
-    B.printPostorder("B");
+    B.printPostOrderByRecursive("B");
 
     Tree<double>::myOperation(A, B);
     A.printTree("UNION A and B");
-    A.printPostorder("UNION A and B");
+    A.printPostOrderByRecursive("UNION A and B");
+    A.printPostOrderByIterator("UNION A and B");
 
     return 0;
 }
