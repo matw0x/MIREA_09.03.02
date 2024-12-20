@@ -115,7 +115,6 @@ public:
 
         std::cout << "nullptr\n";
     }
-
 };
 
 int main() {

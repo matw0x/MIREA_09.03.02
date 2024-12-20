@@ -5,7 +5,6 @@
 // выводить точки в формате (x;y).
 
 #include <iostream>
-#include <ostream>
 
 class Point2D {
 private:
